@@ -1,6 +1,7 @@
 import pygame
 from sprites import *
 from config import *
+from player import *
 import sys
 
 class Game:
@@ -28,6 +29,7 @@ class Game:
                     self.player = Player(self, column, row)
                 if j == 'E':
                     Enemy(self,column, row)
+        InventoryItem(self, 50, 50)
                 
 
     def new(self):
@@ -37,6 +39,9 @@ class Game:
         self.blocks = pygame.sprite.LayeredUpdates()
         self.enemies = pygame.sprite.LayeredUpdates()
         self.attacks = pygame.sprite.LayeredUpdates()
+
+        self.inventory_toggle = False
+        self.inventory = pygame.sprite.LayeredUpdates()
 
         self.createTilemap()
 
@@ -60,10 +65,28 @@ class Game:
 
     def update(self):
         self.all_sprites.update()
+        self.inventory.update()
+        #print(self.clock.get_fps())
+        #print(self.inventory_toggle)
+        if self.player.rect.right > self.screen.get_width():
+            for sprite in self.all_sprites:
+                sprite.rect.x -= self.screen.get_width()
+        if self.player.rect.right < 0:
+            for sprite in self.all_sprites:
+                sprite.rect.x += self.screen.get_width()
+        if self.player.rect.bottom > self.screen.get_height():
+            for sprite in self.all_sprites:
+                sprite.rect.y -= self.screen.get_height()
+        if self.player.rect.bottom < 0:
+            for sprite in self.all_sprites:
+                sprite.rect.y += self.screen.get_height()
+
 
     def draw(self):
         self.screen.fill(BLACK)
         self.all_sprites.draw(self.screen)
+        if self.inventory_toggle:
+            self.inventory.draw(self.screen)
         self.clock.tick(FPS)
         pygame.display.update()
 
